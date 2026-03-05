@@ -35,13 +35,20 @@
   .btn-primary:hover { background:#d4e83a; transform:translateY(-1px); }
   .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-  .apikey-row { margin-top:14px; display:flex; align-items:center; gap:10px; }
-  .apikey-label { font-size:0.73rem; color:var(--muted); white-space:nowrap; font-family:'JetBrains Mono',monospace; }
-  .apikey-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 14px; color:var(--text); font-size:0.82rem; font-family:'JetBrains Mono',monospace; outline:none; transition:border-color 0.2s; }
-  .apikey-input:focus { border-color:var(--accent2); }
-  .apikey-input::placeholder { color:var(--muted); }
-  .apikey-note { font-size:0.7rem; color:var(--muted); margin-top:7px; line-height:1.6; }
-  .apikey-note a { color:var(--accent2); text-decoration:none; }
+  /* 스크립트 붙여넣기 모달 */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; width:100%; max-width:680px; max-height:90vh; display:flex; flex-direction:column; gap:16px; }
+  .modal-title { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px; color:var(--accent); }
+  .modal-step { font-size:0.78rem; color:var(--muted); line-height:1.8; background:var(--surface2); border-radius:10px; padding:14px 16px; border:1px solid var(--border); }
+  .modal-step strong { color:var(--accent2); }
+  .modal-textarea { flex:1; background:var(--bg); border:2px solid var(--border); border-radius:12px; padding:16px; color:var(--text); font-size:0.85rem; font-family:'JetBrains Mono',monospace; outline:none; resize:none; min-height:200px; line-height:1.7; transition:border-color 0.2s; }
+  .modal-textarea:focus { border-color:var(--accent); }
+  .modal-textarea::placeholder { color:var(--muted); }
+  .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+  .modal-title-input { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.88rem; font-family:'Noto Sans KR',sans-serif; outline:none; width:100%; transition:border-color 0.2s; }
+  .modal-title-input:focus { border-color:var(--accent); }
+  .modal-title-input::placeholder { color:var(--muted); }
 
   .section-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:2px; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:12px; }
   .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
@@ -159,33 +166,22 @@
   <!-- LIST VIEW -->
   <div id="view-list">
     <div class="hero-input">
-      <div class="hero-label">▶ YouTube URL</div>
+      <div class="hero-label">▶ YouTube URL + 스크립트 붙여넣기</div>
       <div class="input-row">
         <input class="url-input" id="urlInput"
                placeholder="youtu.be/xxxxx 또는 youtube.com/watch?v=xxxxx"
-               onkeydown="if(event.key==='Enter') loadVideo()"/>
-        <button class="btn-primary" id="loadBtn" onclick="loadVideo()">불러오기</button>
+               onkeydown="if(event.key==='Enter') openScriptModal()"/>
+        <button class="btn-primary" id="loadBtn" onclick="openScriptModal()">스크립트 입력</button>
       </div>
-      <div class="apikey-row">
-        <span class="apikey-label">GEMINI KEY</span>
-        <input class="apikey-input" id="apiKeyInput" type="password"
-               placeholder="AIzaSy... (최초 1회 입력 후 자동 저장)"/>
-        <button class="btn-primary" style="padding:9px 16px;font-size:0.8rem;" onclick="saveApiKeyManual()">저장</button>
-      </div>
-      <div id="apiKeySavedMsg" style="display:none;margin-top:6px;font-size:0.72rem;color:#4ade80;font-family:'JetBrains Mono',monospace;">✓ API Key가 이 브라우저에 저장되었습니다</div>
-      <div class="apikey-note">
-        🔒 키는 <strong>이 브라우저의 localStorage에만</strong> 저장됩니다. 코드/GitHub에 포함되지 않습니다.<br>
-        무료 발급: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+      <div style="margin-top:12px;font-size:0.75rem;color:var(--muted);line-height:1.8;">
+        📋 <strong style="color:var(--accent2);">스크립트 가져오는 법:</strong>
+        YouTube 영상 페이지 → 영상 아래 <strong style="color:var(--text);">「...」더보기</strong> → <strong style="color:var(--text);">「스크립트 열기」</strong> → 전체 복사
       </div>
     </div>
 
     <div id="errorBox" style="display:none;" class="error-box"></div>
 
-    <div id="loadingState" style="display:none;" class="loading-overlay">
-      <div class="spinner"></div>
-      <div class="loading-text">스크립트 분석 중</div>
-      <div class="loading-sub" id="loadingSub">잠시만 기다려주세요...</div>
-    </div>
+
 
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
       <div class="section-title" style="margin-bottom:0;flex:1;">
@@ -197,7 +193,7 @@
     <div id="emptyState" class="empty-state">
       <div class="empty-icon">🎬</div>
       <div class="empty-title">아직 추가된 영상이 없어요</div>
-      <div class="empty-sub">위에 YouTube 링크와 API Key를 입력하고 학습을 시작하세요</div>
+      <div class="empty-sub">YouTube URL 입력 후 「스크립트 입력」 버튼을 눌러 스크립트를 붙여넣으세요</div>
     </div>
   </div>
 
@@ -240,6 +236,36 @@
 
 </div>
 
+<!-- 스크립트 붙여넣기 모달 -->
+<div id="scriptModal" style="display:none;" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">📋 스크립트 붙여넣기</div>
+    <div class="modal-step">
+      <strong>① YouTube에서 스크립트 복사하는 방법</strong><br>
+      영상 페이지 → 영상 하단 <strong>「 ··· 」더보기</strong> 클릭 → <strong>「스크립트 열기」</strong> 클릭 → 텍스트 전체 선택 후 복사 (Ctrl+A → Ctrl+C)<br><br>
+      <strong>② 영상 제목 입력 (선택)</strong><br>
+      제목을 입력하지 않으면 URL에서 자동으로 ID가 사용됩니다.
+    </div>
+    <input class="modal-title-input" id="videoTitleInput" placeholder="영상 제목 입력 (선택사항)"/>
+    <textarea class="modal-textarea" id="scriptInput"
+      placeholder="여기에 YouTube 스크립트를 붙여넣으세요...
+
+예시 형식 (타임스탬프 있는 경우):
+0:00
+Hello everyone welcome back
+0:03
+Today we're going to learn about...
+
+예시 형식 (타임스탬프 없는 경우):
+Hello everyone welcome back to the channel.
+Today we're going to learn about something amazing."></textarea>
+    <div class="modal-actions">
+      <button class="btn-lg" style="background:var(--surface2);color:var(--muted);" onclick="closeModal()">취소</button>
+      <button class="btn-lg btn-green" onclick="confirmScript()">✓ 학습 시작</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 // ===== STATE =====
@@ -249,28 +275,6 @@ try { const r=localStorage.getItem('ytStudy_v3'); if(r) myVideos=JSON.parse(r); 
 let currentVideoId=null, currentTranscript=[], currentVocab=[];
 let ytPlayer=null, playerReady=false, currentTime=0, timeInterval=null;
 let quizItems=[], quizIndex=0, quizScore=0, quizAnswered=false;
-
-// Restore saved Gemini API key (localStorage only — never in code/GitHub)
-const _savedKey = localStorage.getItem('ytGeminiKey')||'';
-if(_savedKey){
-  document.getElementById('apiKeyInput').value=_savedKey;
-  showSavedMsg();
-}
-
-function saveApiKeyManual(){
-  const val=(document.getElementById('apiKeyInput').value||'').trim();
-  if(!val){ alert('API Key를 입력해주세요.'); return; }
-  if(!val.startsWith('AIza')){ alert('Gemini API Key 형식이 올바르지 않습니다.\nAIzaSy... 형태여야 합니다.'); return; }
-  localStorage.setItem('ytGeminiKey', val);
-  showSavedMsg();
-}
-
-function showSavedMsg(){
-  const msg=document.getElementById('apiKeySavedMsg');
-  if(msg){ msg.style.display='block'; setTimeout(()=>{ msg.style.display='none'; },3000); }
-}
-
-function getApiKey(){ return localStorage.getItem('ytGeminiKey') || (document.getElementById('apiKeyInput').value||'').trim(); }
 
 // ===== YT PLAYER =====
 function onYouTubeIframeAPIReady(){}
@@ -304,144 +308,111 @@ function extractVideoId(url){
   return m?m[1]:null;
 }
 
-// ===== GEMINI API CALL =====
-// API Key는 코드에 하드코딩하지 않고 localStorage에서만 읽습니다 (GitHub 안전)
-async function callGemini(prompt, apiKey){
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const res=await fetch(url,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      contents:[{parts:[{text:prompt}]}],
-      generationConfig:{temperature:0.1, maxOutputTokens:8000}
-    })
-  });
-  if(!res.ok){
-    const e=await res.json().catch(()=>({}));
-    throw new Error(e.error?.message||`HTTP ${res.status}`);
-  }
-  const data=await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
-}
-
-async function fetchTranscript(videoId, apiKey){
-  // Gemini에게 YouTube timedtext API를 직접 호출해서 파싱 요청
-  const prompt1=`You are a transcript parser. Fetch the content from this URL and parse it:
-https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3
-
-If that returns empty JSON, try:
-https://www.youtube.com/api/timedtext?v=${videoId}&lang=a.en&fmt=json3
-
-The JSON has an "events" array. Each event has "tStartMs" (milliseconds) and "segs" (array with "utf8" text).
-
-Return ONLY a raw JSON array, no markdown, no code fences:
-[{"text":"spoken text","offset":1.23},{"text":"next line","offset":4.5}]
-
-offset = tStartMs / 1000. Skip [Music] [Applause] labels. Return [] if unavailable.`;
-
-  let txt = await callGemini(prompt1, apiKey);
-  let match = txt.match(/\[\s*\{[\s\S]*?\}\s*\]/);
-  if(match){
-    try{
-      const arr=JSON.parse(match[0]);
-      if(Array.isArray(arr)&&arr.length>=5) return cleanTranscript(arr);
-    }catch(e){}
-  }
-
-  // Fallback
-  const prompt2=`Find the English transcript for YouTube video: https://www.youtube.com/watch?v=${videoId}
-
-Return ONLY a raw JSON array with all caption entries:
-[{"text":"actual spoken words","offset":0.0},{"text":"next line","offset":3.5}]
-No markdown. No explanation. Return [] if truly unavailable.`;
-
-  txt = await callGemini(prompt2, apiKey);
-  match = txt.match(/\[\s*\{[\s\S]*?\}\s*\]/);
-  if(match){
-    try{
-      const arr=JSON.parse(match[0]);
-      if(Array.isArray(arr)&&arr.length>=3) return cleanTranscript(arr);
-    }catch(e){}
-  }
-
-  return null;
-}
-
-function cleanTranscript(arr){
-  return arr
-    .filter(e=>e&&e.text&&typeof e.offset==='number')
-    .map(e=>({text:String(e.text).replace(/\n/g,' ').trim(), offset:Number(e.offset)}))
-    .filter(e=>e.text.length>1&&!/^\[.*\]$/.test(e.text));
-}
-
-async function fetchTitle(videoId, apiKey){
-  try{
-    const txt=await callGemini(
-      `What is the title of this YouTube video: https://www.youtube.com/watch?v=${videoId} ? Reply with ONLY the title, nothing else.`,
-      apiKey
-    );
-    const t=txt.trim().replace(/^["']|["']$/g,'');
-    if(t.length>2&&t.length<200) return t;
-  }catch(e){}
-  return `Video ${videoId.slice(0,8)}`;
-}
-
-// ===== LOAD VIDEO =====
-async function loadVideo(){
+// ===== MODAL: 스크립트 붙여넣기 =====
+function openScriptModal(){
   const url=document.getElementById('urlInput').value.trim();
-  const apiKey=getApiKey();
+  if(!url){ showError('YouTube URL을 먼저 입력해주세요.'); return; }
+  if(!extractVideoId(url)){ showError('유효한 YouTube URL을 입력해주세요.\n예: https://youtu.be/KW0kDxU7LEg'); return; }
   hideError();
+  document.getElementById('scriptInput').value='';
+  document.getElementById('videoTitleInput').value='';
+  document.getElementById('scriptModal').style.display='flex';
+  setTimeout(()=>document.getElementById('scriptInput').focus(),100);
+}
 
-  if(!url){ showError('YouTube 링크를 입력해주세요.'); return; }
-  if(!apiKey){ showError('Gemini API Key를 입력하고 저장 버튼을 눌러주세요.\naistudio.google.com/apikey 에서 무료 발급 가능합니다.'); return; }
-  if(!apiKey.startsWith('AIza')){ showError('올바른 Gemini API Key 형식이 아닙니다.\n(AIzaSy... 형태여야 합니다)'); return; }
+function closeModal(){
+  document.getElementById('scriptModal').style.display='none';
+}
 
+function confirmScript(){
+  const raw=document.getElementById('scriptInput').value.trim();
+  if(!raw){ alert('스크립트를 붙여넣어주세요.'); return; }
+
+  const url=document.getElementById('urlInput').value.trim();
   const vid=extractVideoId(url);
-  if(!vid){ showError('유효한 YouTube 링크를 입력해주세요.\n예: https://youtu.be/KW0kDxU7LEg'); return; }
+  if(!vid){ alert('URL 오류가 발생했습니다.'); return; }
 
-  document.getElementById('loadBtn').disabled=true;
-  setLoading(true,'YouTube 자막 API에서 스크립트 가져오는 중...');
+  const transcript=parseScript(raw);
+  if(!transcript||transcript.length<2){ alert('스크립트를 파싱하지 못했습니다.\n텍스트가 올바르게 붙여넣어졌는지 확인해주세요.'); return; }
 
-  try{
-    const transcript=await fetchTranscript(vid,apiKey);
+  const titleInput=document.getElementById('videoTitleInput').value.trim();
+  const title=titleInput||`영상 ${vid.slice(0,8)}`;
 
-    if(!transcript||transcript.length<3){
-      showError(
-        '영어 자막을 가져오지 못했습니다.\n\n'+
-        '확인사항:\n'+
-        '• YouTube에서 영상 재생 → CC 버튼 → English 자막 활성화 가능한지 확인\n'+
-        '• 자동 생성(Auto-generated) 자막도 지원됩니다\n'+
-        '• 일부 영상은 지역 제한으로 자막 접근이 불가할 수 있습니다'
-      );
-      return;
+  const existing=myVideos.find(v=>v.id===vid);
+  if(existing){ existing.transcript=transcript; existing.title=title; existing.lastStudied=Date.now(); }
+  else { myVideos.push({id:vid,url,title,lastStudied:Date.now(),transcript}); }
+  saveVideos();
+
+  document.getElementById('urlInput').value='';
+  closeModal();
+  currentVideoId=vid; currentTranscript=transcript; currentVocab=extractVocab(transcript);
+  openStudy(vid);
+}
+
+// YouTube 스크립트 텍스트 파싱
+// 타임스탬프 있는 형식: "0:03\nHello world" 또는 "0:03 Hello world"
+// 타임스탬프 없는 형식: 문장 그냥 나열
+function parseScript(raw){
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const result=[];
+
+  // 타임스탬프 패턴: 0:03, 1:23, 1:23:45
+  const tsPattern=/^(\d{1,2}:)?\d{1,2}:\d{2}$/;
+
+  let offset=0;
+  let i=0;
+
+  // Check if timestamps exist
+  const hasTimestamps=lines.some(l=>tsPattern.test(l));
+
+  if(hasTimestamps){
+    while(i<lines.length){
+      const line=lines[i];
+      if(tsPattern.test(line)){
+        const sec=parseTimestamp(line);
+        // Collect text lines after this timestamp
+        const textLines=[];
+        i++;
+        while(i<lines.length && !tsPattern.test(lines[i])){
+          textLines.push(lines[i]);
+          i++;
+        }
+        const text=textLines.join(' ').trim();
+        if(text) result.push({text, offset:sec});
+      } else {
+        // Text before first timestamp
+        i++;
+      }
     }
-
-    setLoading(true,'영상 정보 가져오는 중...');
-    const title=await fetchTitle(vid,apiKey);
-
-    const existing=myVideos.find(v=>v.id===vid);
-    if(existing){ existing.transcript=transcript; existing.title=title; existing.lastStudied=Date.now(); }
-    else { myVideos.push({id:vid,url,title,lastStudied:Date.now(),transcript}); }
-    saveVideos();
-
-    currentVideoId=vid; currentTranscript=transcript; currentVocab=extractVocab(transcript);
-    document.getElementById('urlInput').value='';
-    openStudy(vid);
-
-  }catch(err){
-    console.error(err);
-    showError('오류가 발생했습니다:\n'+err.message+'\n\nGemini API Key가 유효한지 확인해주세요.\n(aistudio.google.com/apikey)');
-  }finally{
-    document.getElementById('loadBtn').disabled=false;
-    setLoading(false);
+  } else {
+    // No timestamps — split into sentences, assign fake offsets (5s each)
+    let combined=lines.join(' ');
+    // Split by sentence
+    const sentences=combined.match(/[^.!?]+[.!?]+/g)||[combined];
+    sentences.forEach((s,idx)=>{
+      const text=s.trim();
+      if(text.length>2) result.push({text, offset:idx*5});
+    });
   }
+
+  return result.length>0 ? result : null;
+}
+
+function parseTimestamp(ts){
+  const parts=ts.split(':').map(Number);
+  if(parts.length===3) return parts[0]*3600+parts[1]*60+parts[2];
+  if(parts.length===2) return parts[0]*60+parts[1];
+  return 0;
+}
+
+// ===== LOAD VIDEO (수동 스크립트 방식으로 변경) =====
+function loadVideo(){
+  openScriptModal();
 }
 
 function setLoading(show,msg){
-  document.getElementById('loadingState').style.display=show?'block':'none';
-  if(msg) document.getElementById('loadingSub').textContent=msg;
-  document.getElementById('videoGrid').style.display=show?'none':'';
-  if(!show) renderVideoList();
+  // 수동 입력 방식 - 로딩 불필요
+  renderVideoList();
 }
 
 function showError(msg){
