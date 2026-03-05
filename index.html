@@ -8,710 +8,138 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0c0e14;
-    --surface: #13161f;
-    --surface2: #1a1e2a;
-    --border: #252a3a;
-    --accent: #e8ff47;
-    --accent2: #47c6ff;
-    --accent3: #ff6b6b;
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --radius: 12px;
+    --bg: #0c0e14; --surface: #13161f; --surface2: #1a1e2a; --border: #252a3a;
+    --accent: #e8ff47; --accent2: #47c6ff; --accent3: #ff6b6b; --text: #e8eaf0; --muted: #6b7280; --radius: 12px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* NOISE TEXTURE OVERLAY */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1000;
-  }
-
-  /* TOP BAR */
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 32px;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: rgba(12,14,20,0.95);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-shadow: 0 0 30px rgba(232,255,71,0.3);
-  }
-
-  .logo span { color: var(--accent2); }
-
-  .nav-tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 4px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-
-  .nav-tab {
-    padding: 8px 20px;
-    border-radius: 7px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Noto Sans KR', sans-serif;
-  }
-
-  .nav-tab.active {
-    background: var(--accent);
-    color: #0c0e14;
-    font-weight: 700;
-  }
-
-  /* MAIN LAYOUT */
-  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-
-  /* URL INPUT SECTION */
-  .hero-input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-input::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(232,255,71,0.05) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .input-row {
-    display: flex;
-    gap: 12px;
-  }
-
-  .url-input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
-    color: var(--text);
-    font-size: 0.95rem;
-    font-family: 'JetBrains Mono', monospace;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .url-input:focus { border-color: var(--accent); }
-  .url-input::placeholder { color: var(--muted); }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #0c0e14;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 28px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    font-family: 'Noto Sans KR', sans-serif;
-  }
-
-  .btn-primary:hover { background: #d4e83a; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  /* VIDEO LIST */
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.8rem;
-    letter-spacing: 2px;
-    color: var(--text);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .badge {
-    background: var(--accent);
-    color: #0c0e14;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-
-  .video-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-  }
-
-  .video-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: all 0.25s;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .video-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(232,255,71,0.08);
-  }
-
-  .video-thumb {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
-    display: block;
-    background: var(--surface2);
-  }
-
-  .video-thumb-placeholder {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--surface2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 2rem;
-  }
-
-  .video-card-body { padding: 16px; }
-
-  .video-title {
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.5;
-  }
-
-  .video-meta {
-    font-size: 0.75rem;
-    color: var(--muted);
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .video-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .btn-sm {
-    padding: 7px 14px;
-    border-radius: 7px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-    font-family: 'Noto Sans KR', sans-serif;
-  }
-
-  .btn-study { background: var(--accent2); color: #0c0e14; }
-  .btn-study:hover { background: #34b3e8; }
-
-  .btn-quiz { background: #ff6b6b33; color: var(--accent3); border: 1px solid var(--accent3); }
-  .btn-quiz:hover { background: var(--accent3); color: #fff; }
-
-  .btn-delete { background: transparent; color: var(--muted); border: 1px solid var(--border); margin-left: auto; }
-  .btn-delete:hover { color: var(--accent3); border-color: var(--accent3); }
-
-  /* STUDY SCREEN */
-  .study-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 24px;
-  }
-
-  @media (max-width: 900px) {
-    .study-layout { grid-template-columns: 1fr; }
-  }
-
-  .video-player-wrap {
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    aspect-ratio: 16/9;
-    background: #000;
-  }
-
-  .video-player-wrap iframe {
-    width: 100%;
-    height: 100%;
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .panel-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .panel-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent);
-  }
-
-  .transcript-body {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 480px;
-    padding: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .transcript-item {
-    display: flex;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    align-items: flex-start;
-    border: 1px solid transparent;
-  }
-
-  .transcript-item:hover {
-    background: var(--surface2);
-    border-color: var(--border);
-  }
-
-  .transcript-item.active {
-    background: rgba(232,255,71,0.08);
-    border-color: rgba(232,255,71,0.2);
-  }
-
-  .ts-time {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    min-width: 44px;
-    padding-top: 2px;
-  }
-
-  .ts-text {
-    font-size: 0.88rem;
-    line-height: 1.6;
-    color: var(--text);
-  }
-
-  .transcript-item.active .ts-text { font-weight: 600; }
-
-  /* VOCAB PANEL */
-  .vocab-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px;
-  }
-
-  .vocab-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 14px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
-    color: var(--accent2);
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .vocab-chip:hover {
-    border-color: var(--accent2);
-    background: rgba(71,198,255,0.1);
-  }
-
-  .vocab-chip .count {
-    font-size: 0.68rem;
-    color: var(--muted);
-    background: var(--bg);
-    padding: 1px 6px;
-    border-radius: 10px;
-  }
-
-  /* BUTTONS */
-  .btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-family: 'Noto Sans KR', sans-serif;
-    margin-bottom: 20px;
-    transition: color 0.15s;
-  }
-
-  .btn-back:hover { color: var(--text); }
-
-  .action-bar {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-
-  .btn-lg {
-    padding: 14px 32px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    font-family: 'Noto Sans KR', sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-green { background: #4ade80; color: #0c0e14; }
-  .btn-green:hover { background: #3bc870; transform: translateY(-2px); }
-
-  .btn-orange { background: #fb923c; color: #0c0e14; }
-  .btn-orange:hover { background: #f97316; transform: translateY(-2px); }
-
-  /* QUIZ SCREEN */
-  .quiz-progress {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .progress-bar-wrap {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    height: 8px;
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 100px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--muted);
-    min-width: 60px;
-    text-align: right;
-  }
-
-  .quiz-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 36px;
-    max-width: 720px;
-    margin: 0 auto;
-    animation: slideUp 0.3s ease;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .quiz-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-  }
-
-  .quiz-sentence {
-    font-size: 1.5rem;
-    line-height: 1.8;
-    font-weight: 300;
-    margin-bottom: 28px;
-    color: var(--text);
-    letter-spacing: 0.3px;
-  }
-
-  .quiz-blank {
-    display: inline-block;
-    border-bottom: 3px solid var(--accent);
-    min-width: 100px;
-    color: var(--accent);
-    font-weight: 700;
-    padding: 0 8px;
-    text-align: center;
-  }
-
-  .quiz-input-row {
-    display: flex;
-    gap: 10px;
-  }
-
-  .quiz-input {
-    flex: 1;
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    font-size: 1.1rem;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .quiz-input:focus { border-color: var(--accent); }
-  .quiz-input.correct { border-color: #4ade80; background: rgba(74,222,128,0.05); }
-  .quiz-input.wrong { border-color: var(--accent3); background: rgba(255,107,107,0.05); }
-
-  .btn-check {
-    background: var(--accent);
-    color: #0c0e14;
-    border: none;
-    border-radius: 12px;
-    padding: 16px 28px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Noto Sans KR', sans-serif;
-    transition: all 0.15s;
-  }
-
-  .btn-check:hover { background: #d4e83a; }
-
-  .quiz-feedback {
-    margin-top: 16px;
-    padding: 14px 18px;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.92rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .quiz-feedback.correct { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
-  .quiz-feedback.wrong { background: rgba(255,107,107,0.1); color: var(--accent3); border: 1px solid rgba(255,107,107,0.2); }
-
-  .quiz-context-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    margin-top: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    transition: all 0.15s;
-  }
-
-  .quiz-context-btn:hover { color: var(--accent2); border-color: var(--accent2); }
-
-  .quiz-result {
-    text-align: center;
-    padding: 60px 32px;
-    animation: slideUp 0.3s ease;
-  }
-
-  .result-score {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 6rem;
-    color: var(--accent);
-    line-height: 1;
-    text-shadow: 0 0 60px rgba(232,255,71,0.3);
-    margin-bottom: 8px;
-  }
-
-  .result-label {
-    font-size: 1.1rem;
-    color: var(--muted);
-    margin-bottom: 32px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .result-actions { display: flex; gap: 12px; justify-content: center; }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 80px 32px;
-    color: var(--muted);
-  }
-
-  .empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
-  .empty-title { font-size: 1.1rem; margin-bottom: 8px; font-weight: 500; }
-  .empty-sub { font-size: 0.85rem; }
-
-  /* LOADING */
-  .loading-overlay {
-    text-align: center;
-    padding: 60px;
-  }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 20px;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-text {
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  /* VIDEO TITLE IN STUDY MODE */
-  .study-header {
-    margin-bottom: 20px;
-  }
-
-  .study-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .study-id {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-
-  /* TOOLTIP */
-  .tooltip-wrap { position: relative; }
-  .tooltip-wrap .tooltip-box {
-    display: none;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 0.78rem;
-    padding: 8px 14px;
-    border-radius: 8px;
-    white-space: nowrap;
-    z-index: 200;
-    line-height: 1.6;
-    max-width: 260px;
-    white-space: normal;
-    text-align: center;
-  }
-  .tooltip-wrap:hover .tooltip-box { display: block; }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .topbar { padding: 14px 16px; }
-    .logo { font-size: 1.5rem; }
-    .nav-tabs { display: none; }
-    .container { padding: 20px 16px; }
-    .quiz-sentence { font-size: 1.15rem; }
-    .result-score { font-size: 4rem; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:1000; }
+
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(12,14,20,0.96); backdrop-filter:blur(12px); z-index:100; }
+  .logo { font-family:'Bebas Neue',sans-serif; font-size:1.9rem; letter-spacing:3px; color:var(--accent); text-shadow:0 0 30px rgba(232,255,71,0.3); }
+  .logo span { color:var(--accent2); }
+  .nav-tabs { display:flex; gap:4px; background:var(--surface); padding:4px; border-radius:10px; border:1px solid var(--border); }
+  .nav-tab { padding:8px 20px; border-radius:7px; font-size:0.85rem; font-weight:500; cursor:pointer; transition:all 0.2s; border:none; background:transparent; color:var(--muted); font-family:'Noto Sans KR',sans-serif; }
+  .nav-tab.active { background:var(--accent); color:#0c0e14; font-weight:700; }
+
+  .container { max-width:1200px; margin:0 auto; padding:32px 24px; }
+
+  .hero-input { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:32px; position:relative; overflow:hidden; }
+  .hero-input::before { content:''; position:absolute; top:-50%; right:-20%; width:400px; height:400px; background:radial-gradient(circle,rgba(232,255,71,0.05) 0%,transparent 70%); pointer-events:none; }
+  .hero-label { font-size:0.72rem; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-bottom:12px; font-family:'JetBrains Mono',monospace; }
+  .input-row { display:flex; gap:12px; }
+  .url-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 18px; color:var(--text); font-size:0.92rem; font-family:'JetBrains Mono',monospace; outline:none; transition:border-color 0.2s; }
+  .url-input:focus { border-color:var(--accent); }
+  .url-input::placeholder { color:var(--muted); }
+  .btn-primary { background:var(--accent); color:#0c0e14; border:none; border-radius:10px; padding:14px 28px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; font-family:'Noto Sans KR',sans-serif; }
+  .btn-primary:hover { background:#d4e83a; transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .apikey-row { margin-top:14px; display:flex; align-items:center; gap:10px; }
+  .apikey-label { font-size:0.73rem; color:var(--muted); white-space:nowrap; font-family:'JetBrains Mono',monospace; }
+  .apikey-input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 14px; color:var(--text); font-size:0.82rem; font-family:'JetBrains Mono',monospace; outline:none; transition:border-color 0.2s; }
+  .apikey-input:focus { border-color:var(--accent2); }
+  .apikey-input::placeholder { color:var(--muted); }
+  .apikey-note { font-size:0.7rem; color:var(--muted); margin-top:7px; line-height:1.6; }
+  .apikey-note a { color:var(--accent2); text-decoration:none; }
+
+  .section-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:2px; color:var(--text); margin-bottom:20px; display:flex; align-items:center; gap:12px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .badge { background:var(--accent); color:#0c0e14; font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600; padding:3px 10px; border-radius:20px; }
+
+  .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+  .video-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:all 0.25s; }
+  .video-card:hover { border-color:var(--accent); transform:translateY(-3px); box-shadow:0 12px 40px rgba(232,255,71,0.08); }
+  .video-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:var(--surface2); }
+  .video-card-body { padding:16px; }
+  .video-title { font-weight:600; font-size:0.9rem; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.5; }
+  .video-meta { font-size:0.75rem; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:12px; font-family:'JetBrains Mono',monospace; }
+  .video-actions { display:flex; gap:8px; }
+  .btn-sm { padding:7px 14px; border-radius:7px; font-size:0.8rem; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; font-family:'Noto Sans KR',sans-serif; }
+  .btn-study { background:var(--accent2); color:#0c0e14; }
+  .btn-study:hover { background:#34b3e8; }
+  .btn-quiz { background:#ff6b6b22; color:var(--accent3); border:1px solid var(--accent3); }
+  .btn-quiz:hover { background:var(--accent3); color:#fff; }
+  .btn-delete { background:transparent; color:var(--muted); border:1px solid var(--border); margin-left:auto; }
+  .btn-delete:hover { color:var(--accent3); border-color:var(--accent3); }
+
+  .study-layout { display:grid; grid-template-columns:1fr 380px; gap:24px; }
+  @media(max-width:900px){ .study-layout{grid-template-columns:1fr;} }
+  .video-player-wrap { border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.5); aspect-ratio:16/9; background:#000; }
+  .video-player-wrap iframe { width:100%; height:100%; }
+
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .panel-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .panel-title { font-size:0.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; font-family:'JetBrains Mono',monospace; color:var(--accent); }
+  .transcript-body { flex:1; overflow-y:auto; max-height:440px; padding:10px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+  .transcript-item { display:flex; gap:10px; padding:9px 10px; border-radius:8px; cursor:pointer; transition:all 0.15s; align-items:flex-start; border:1px solid transparent; }
+  .transcript-item:hover { background:var(--surface2); border-color:var(--border); }
+  .transcript-item.active { background:rgba(232,255,71,0.08); border-color:rgba(232,255,71,0.25); }
+  .ts-time { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); min-width:42px; padding-top:2px; }
+  .ts-text { font-size:0.86rem; line-height:1.6; }
+  .transcript-item.active .ts-text { font-weight:600; }
+
+  .vocab-grid { display:flex; flex-wrap:wrap; gap:8px; padding:14px; }
+  .vocab-chip { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--accent2); cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:5px; }
+  .vocab-chip:hover { border-color:var(--accent2); background:rgba(71,198,255,0.1); }
+  .vocab-chip .cnt { font-size:0.67rem; color:var(--muted); background:var(--bg); padding:1px 5px; border-radius:10px; }
+
+  .btn-back { display:inline-flex; align-items:center; gap:6px; color:var(--muted); background:none; border:none; cursor:pointer; font-size:0.85rem; font-family:'Noto Sans KR',sans-serif; margin-bottom:18px; transition:color 0.15s; }
+  .btn-back:hover { color:var(--text); }
+  .action-bar { display:flex; gap:12px; margin-top:18px; flex-wrap:wrap; }
+  .btn-lg { padding:13px 28px; border-radius:12px; font-size:0.9rem; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; font-family:'Noto Sans KR',sans-serif; display:flex; align-items:center; gap:8px; }
+  .btn-green { background:#4ade80; color:#0c0e14; }
+  .btn-green:hover { background:#3bc870; transform:translateY(-2px); }
+  .btn-orange { background:#fb923c; color:#0c0e14; }
+  .btn-orange:hover { background:#f97316; transform:translateY(-2px); }
+
+  .quiz-progress { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .progress-bar-wrap { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:100px; height:8px; overflow:hidden; }
+  .progress-bar { height:100%; background:var(--accent); border-radius:100px; transition:width 0.4s ease; }
+  .progress-text { font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--muted); min-width:60px; text-align:right; }
+  .quiz-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px; max-width:720px; margin:0 auto; animation:slideUp 0.3s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+  .quiz-num { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:18px; }
+  .quiz-sentence { font-size:1.45rem; line-height:1.8; font-weight:300; margin-bottom:24px; }
+  .quiz-blank { display:inline-block; border-bottom:3px solid var(--accent); min-width:90px; color:var(--accent); font-weight:700; padding:0 8px; text-align:center; }
+  .quiz-input-row { display:flex; gap:10px; }
+  .quiz-input { flex:1; background:var(--bg); border:2px solid var(--border); border-radius:12px; padding:15px 18px; font-size:1.05rem; color:var(--text); outline:none; transition:border-color 0.2s; font-family:'JetBrains Mono',monospace; }
+  .quiz-input:focus { border-color:var(--accent); }
+  .quiz-input.correct { border-color:#4ade80; background:rgba(74,222,128,0.05); }
+  .quiz-input.wrong { border-color:var(--accent3); background:rgba(255,107,107,0.05); }
+  .btn-check { background:var(--accent); color:#0c0e14; border:none; border-radius:12px; padding:15px 26px; font-size:1rem; font-weight:700; cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:all 0.15s; white-space:nowrap; }
+  .btn-check:hover { background:#d4e83a; }
+  .quiz-feedback { margin-top:14px; padding:12px 16px; border-radius:10px; font-weight:600; font-size:0.9rem; display:flex; align-items:center; gap:8px; }
+  .quiz-feedback.correct { background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.2); }
+  .quiz-feedback.wrong { background:rgba(255,107,107,0.1); color:var(--accent3); border:1px solid rgba(255,107,107,0.2); }
+  .quiz-ctx-btn { display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:8px 14px; font-size:0.8rem; cursor:pointer; margin-top:14px; font-family:'Noto Sans KR',sans-serif; transition:all 0.15s; }
+  .quiz-ctx-btn:hover { color:var(--accent2); border-color:var(--accent2); }
+  .quiz-result { text-align:center; padding:60px 32px; animation:slideUp 0.3s ease; }
+  .result-score { font-family:'Bebas Neue',sans-serif; font-size:6rem; color:var(--accent); line-height:1; text-shadow:0 0 60px rgba(232,255,71,0.3); margin-bottom:8px; }
+  .result-label { font-size:1.1rem; color:var(--muted); margin-bottom:32px; font-family:'JetBrains Mono',monospace; }
+  .result-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  .loading-overlay { text-align:center; padding:60px; }
+  .spinner { width:48px; height:48px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+  .loading-text { color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:0.82rem; letter-spacing:2px; text-transform:uppercase; }
+  .loading-sub { color:var(--muted); font-size:0.78rem; margin-top:8px; opacity:0.7; }
+
+  .empty-state { text-align:center; padding:80px 32px; color:var(--muted); }
+  .empty-icon { font-size:3rem; margin-bottom:16px; opacity:0.5; }
+  .empty-title { font-size:1.1rem; margin-bottom:8px; font-weight:500; }
+  .empty-sub { font-size:0.85rem; }
+
+  .study-header { margin-bottom:18px; }
+  .study-title { font-size:1.15rem; font-weight:600; margin-bottom:4px; }
+  .study-id { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--muted); }
+
+  .error-box { background:rgba(255,107,107,0.08); border:1px solid rgba(255,107,107,0.3); border-radius:12px; padding:18px 22px; color:var(--accent3); font-size:0.85rem; line-height:1.8; margin-bottom:20px; }
+  .error-box strong { display:block; margin-bottom:6px; font-size:0.92rem; }
+
+  @media(max-width:600px){
+    .topbar{padding:14px 16px;} .logo{font-size:1.5rem;} .nav-tabs{display:none;}
+    .container{padding:20px 16px;} .quiz-sentence{font-size:1.1rem;} .result-score{font-size:4rem;}
   }
 </style>
 </head>
@@ -727,34 +155,49 @@
 </div>
 
 <div class="container">
+
   <!-- LIST VIEW -->
   <div id="view-list">
     <div class="hero-input">
       <div class="hero-label">▶ YouTube URL</div>
       <div class="input-row">
-        <input class="url-input" id="urlInput" placeholder="youtu.be/xxxxx 또는 youtube.com/watch?v=xxxxx" 
+        <input class="url-input" id="urlInput"
+               placeholder="youtu.be/xxxxx 또는 youtube.com/watch?v=xxxxx"
                onkeydown="if(event.key==='Enter') loadVideo()"/>
         <button class="btn-primary" id="loadBtn" onclick="loadVideo()">불러오기</button>
       </div>
+      <div class="apikey-row">
+        <span class="apikey-label">GEMINI KEY</span>
+        <input class="apikey-input" id="apiKeyInput" type="password"
+               placeholder="AIzaSy... (최초 1회 입력 후 자동 저장)"/>
+        <button class="btn-primary" style="padding:9px 16px;font-size:0.8rem;" onclick="saveApiKeyManual()">저장</button>
+      </div>
+      <div id="apiKeySavedMsg" style="display:none;margin-top:6px;font-size:0.72rem;color:#4ade80;font-family:'JetBrains Mono',monospace;">✓ API Key가 이 브라우저에 저장되었습니다</div>
+      <div class="apikey-note">
+        🔒 키는 <strong>이 브라우저의 localStorage에만</strong> 저장됩니다. 코드/GitHub에 포함되지 않습니다.<br>
+        무료 발급: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+      </div>
     </div>
 
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
-      <div class="section-title" style="margin-bottom:0; flex:1;">
+    <div id="errorBox" style="display:none;" class="error-box"></div>
+
+    <div id="loadingState" style="display:none;" class="loading-overlay">
+      <div class="spinner"></div>
+      <div class="loading-text">스크립트 분석 중</div>
+      <div class="loading-sub" id="loadingSub">잠시만 기다려주세요...</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div class="section-title" style="margin-bottom:0;flex:1;">
         공부 목록 <span class="badge" id="listCount">0</span>
       </div>
     </div>
 
-    <div id="loadingState" style="display:none;" class="loading-overlay">
-      <div class="spinner"></div>
-      <div class="loading-text">스크립트 분석 중...</div>
-    </div>
-
     <div id="videoGrid" class="video-grid"></div>
-
     <div id="emptyState" class="empty-state">
       <div class="empty-icon">🎬</div>
       <div class="empty-title">아직 추가된 영상이 없어요</div>
-      <div class="empty-sub">위에 YouTube 링크를 붙여넣고 학습을 시작하세요</div>
+      <div class="empty-sub">위에 YouTube 링크와 API Key를 입력하고 학습을 시작하세요</div>
     </div>
   </div>
 
@@ -765,32 +208,24 @@
       <div class="study-title" id="studyTitle">—</div>
       <div class="study-id" id="studyId"></div>
     </div>
-
     <div class="study-layout">
-      <!-- LEFT: Player + Transcript -->
       <div>
-        <div class="video-player-wrap" id="playerWrap">
-          <div id="ytPlayer"></div>
-        </div>
+        <div class="video-player-wrap"><div id="ytPlayer"></div></div>
         <div class="action-bar">
           <button class="btn-lg btn-green" onclick="startQuiz()">📝 빈칸 퀴즈 시작</button>
           <button class="btn-lg btn-orange" onclick="startClozeAll()">🔥 전체 통암기 모드</button>
         </div>
       </div>
-
-      <!-- RIGHT: Transcript + Vocab -->
-      <div style="display:flex; flex-direction:column; gap:16px;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">📜 스크립트</div>
-            <div style="font-size:0.72rem; color:var(--muted); font-family:'JetBrains Mono',monospace;">클릭 → 해당 구간 이동</div>
+            <div style="font-size:0.67rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">클릭 → 해당 구간</div>
           </div>
           <div class="transcript-body" id="transcriptBody"></div>
         </div>
         <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">📚 주요 단어</div>
-          </div>
+          <div class="panel-header"><div class="panel-title">📚 주요 단어</div></div>
           <div class="vocab-grid" id="vocabGrid"></div>
         </div>
       </div>
@@ -800,203 +235,251 @@
   <!-- QUIZ VIEW -->
   <div id="view-quiz" style="display:none;">
     <button class="btn-back" onclick="switchTab('study')">← 학습 화면</button>
-
     <div id="quizBody"></div>
   </div>
+
 </div>
 
-<!-- YouTube IFrame API -->
 <script src="https://www.youtube.com/iframe_api"></script>
-
 <script>
 // ===== STATE =====
-let myVideos = JSON.parse(localStorage.getItem('ytStudyVideos') || '[]');
-let currentVideoId = null;
-let currentTranscript = [];
-let currentVocab = [];
-let ytPlayer = null;
-let playerReady = false;
-let currentTime = 0;
-let timeInterval = null;
+let myVideos = [];
+try { const r=localStorage.getItem('ytStudy_v3'); if(r) myVideos=JSON.parse(r); } catch(e){}
 
-let quizItems = [];
-let quizIndex = 0;
-let quizScore = 0;
-let quizAnswered = false;
+let currentVideoId=null, currentTranscript=[], currentVocab=[];
+let ytPlayer=null, playerReady=false, currentTime=0, timeInterval=null;
+let quizItems=[], quizIndex=0, quizScore=0, quizAnswered=false;
+
+// Restore saved Gemini API key (localStorage only — never in code/GitHub)
+const _savedKey = localStorage.getItem('ytGeminiKey')||'';
+if(_savedKey){
+  document.getElementById('apiKeyInput').value=_savedKey;
+  showSavedMsg();
+}
+
+function saveApiKeyManual(){
+  const val=(document.getElementById('apiKeyInput').value||'').trim();
+  if(!val){ alert('API Key를 입력해주세요.'); return; }
+  if(!val.startsWith('AIza')){ alert('Gemini API Key 형식이 올바르지 않습니다.\nAIzaSy... 형태여야 합니다.'); return; }
+  localStorage.setItem('ytGeminiKey', val);
+  showSavedMsg();
+}
+
+function showSavedMsg(){
+  const msg=document.getElementById('apiKeySavedMsg');
+  if(msg){ msg.style.display='block'; setTimeout(()=>{ msg.style.display='none'; },3000); }
+}
+
+function getApiKey(){ return localStorage.getItem('ytGeminiKey') || (document.getElementById('apiKeyInput').value||'').trim(); }
 
 // ===== YT PLAYER =====
-function onYouTubeIframeAPIReady() {}
+function onYouTubeIframeAPIReady(){}
 
-function createPlayer(videoId) {
-  if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
-  playerReady = false;
-  document.getElementById('ytPlayer').innerHTML = '';
-  ytPlayer = new YT.Player('ytPlayer', {
-    videoId: videoId,
-    width: '100%',
-    height: '100%',
-    playerVars: { modestbranding: 1, rel: 0 },
-    events: {
-      onReady: () => {
-        playerReady = true;
-      },
-      onStateChange: (e) => {
+function createPlayer(videoId){
+  if(ytPlayer){ try{ytPlayer.destroy();}catch(e){} ytPlayer=null; }
+  playerReady=false; clearInterval(timeInterval);
+  document.getElementById('ytPlayer').innerHTML='';
+  ytPlayer=new YT.Player('ytPlayer',{
+    videoId, width:'100%', height:'100%',
+    playerVars:{modestbranding:1,rel:0},
+    events:{
+      onReady:()=>{ playerReady=true; },
+      onStateChange:(e)=>{
         clearInterval(timeInterval);
-        if (e.data === YT.PlayerState.PLAYING) {
-          timeInterval = setInterval(() => {
-            if (ytPlayer && ytPlayer.getCurrentTime) {
-              currentTime = ytPlayer.getCurrentTime();
-              updateActiveTranscript();
-            }
-          }, 600);
+        if(e.data===YT.PlayerState.PLAYING){
+          timeInterval=setInterval(()=>{
+            if(ytPlayer&&ytPlayer.getCurrentTime){ currentTime=ytPlayer.getCurrentTime(); updateActiveTranscript(); }
+          },600);
         }
       }
     }
   });
 }
 
-function seekTo(sec) {
-  if (ytPlayer && playerReady) {
-    ytPlayer.seekTo(sec, true);
-    ytPlayer.playVideo();
-  }
+function seekTo(sec){ if(ytPlayer&&playerReady){ytPlayer.seekTo(sec,true);ytPlayer.playVideo();} }
+
+// ===== VIDEO ID PARSE =====
+function extractVideoId(url){
+  const m=url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/i);
+  return m?m[1]:null;
 }
 
-// ===== URL PARSE =====
-function extractVideoId(url) {
-  const m = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/i);
-  return m ? m[1] : null;
+// ===== GEMINI API CALL =====
+// API Key는 코드에 하드코딩하지 않고 localStorage에서만 읽습니다 (GitHub 안전)
+async function callGemini(prompt, apiKey){
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{temperature:0.1, maxOutputTokens:8000}
+    })
+  });
+  if(!res.ok){
+    const e=await res.json().catch(()=>({}));
+    throw new Error(e.error?.message||`HTTP ${res.status}`);
+  }
+  const data=await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
 }
 
-// ===== TRANSCRIPT VIA CLAUDE API =====
-async function fetchTranscriptViaProxy(videoId) {
-  // Use timedtext API
-  const langs = ['en', 'en-US', 'en-GB', 'a.en'];
-  for (const lang of langs) {
-    try {
-      const url = `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${lang}&fmt=json3`;
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (!data.events || data.events.length === 0) continue;
+async function fetchTranscript(videoId, apiKey){
+  // Gemini에게 YouTube timedtext API를 직접 호출해서 파싱 요청
+  const prompt1=`You are a transcript parser. Fetch the content from this URL and parse it:
+https://www.youtube.com/api/timedtext?v=${videoId}&lang=en&fmt=json3
 
-      const entries = [];
-      for (const ev of data.events) {
-        if (!ev.segs) continue;
-        const text = ev.segs.map(s => s.utf8 || '').join('').replace(/\n/g, ' ').trim();
-        if (text && text !== '[Music]' && text !== '[Applause]') {
-          entries.push({ text, offset: (ev.tStartMs || 0) / 1000 });
-        }
-      }
-      if (entries.length > 3) return entries;
-    } catch(e) { /* continue */ }
+If that returns empty JSON, try:
+https://www.youtube.com/api/timedtext?v=${videoId}&lang=a.en&fmt=json3
+
+The JSON has an "events" array. Each event has "tStartMs" (milliseconds) and "segs" (array with "utf8" text).
+
+Return ONLY a raw JSON array, no markdown, no code fences:
+[{"text":"spoken text","offset":1.23},{"text":"next line","offset":4.5}]
+
+offset = tStartMs / 1000. Skip [Music] [Applause] labels. Return [] if unavailable.`;
+
+  let txt = await callGemini(prompt1, apiKey);
+  let match = txt.match(/\[\s*\{[\s\S]*?\}\s*\]/);
+  if(match){
+    try{
+      const arr=JSON.parse(match[0]);
+      if(Array.isArray(arr)&&arr.length>=5) return cleanTranscript(arr);
+    }catch(e){}
   }
+
+  // Fallback
+  const prompt2=`Find the English transcript for YouTube video: https://www.youtube.com/watch?v=${videoId}
+
+Return ONLY a raw JSON array with all caption entries:
+[{"text":"actual spoken words","offset":0.0},{"text":"next line","offset":3.5}]
+No markdown. No explanation. Return [] if truly unavailable.`;
+
+  txt = await callGemini(prompt2, apiKey);
+  match = txt.match(/\[\s*\{[\s\S]*?\}\s*\]/);
+  if(match){
+    try{
+      const arr=JSON.parse(match[0]);
+      if(Array.isArray(arr)&&arr.length>=3) return cleanTranscript(arr);
+    }catch(e){}
+  }
+
   return null;
 }
 
-// ===== VOCAB EXTRACTION =====
-const STOP_WORDS = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','must','can','i','you','he','she','it','we','they','my','your','his','her','its','our','their','this','that','these','those','as','if','when','what','how','who','which','so','not','no','yes','just','up','out','about','get','got','go','like','know','think','make','see','say','said','said','come','came','take','took','one','two','all','some','more','very','also','than','then','there','here','back','just','now','time','way','well','even','still','down','into','over','after','before','because','while','though','through','only','much','many','both','each','between','under','never','always','often','again','same','other','new','first','last','long','great','little','own','right','good','old','big','high','different','small','large','next','early','young','few','public','bad','same','able']);
+function cleanTranscript(arr){
+  return arr
+    .filter(e=>e&&e.text&&typeof e.offset==='number')
+    .map(e=>({text:String(e.text).replace(/\n/g,' ').trim(), offset:Number(e.offset)}))
+    .filter(e=>e.text.length>1&&!/^\[.*\]$/.test(e.text));
+}
 
-function extractVocab(transcript) {
-  const freq = {};
-  for (const item of transcript) {
-    const words = item.text.toLowerCase().match(/[a-z']{4,}/g) || [];
-    for (const w of words) {
-      const clean = w.replace(/^'+|'+$/g, '');
-      if (clean.length >= 4 && !STOP_WORDS.has(clean)) {
-        freq[clean] = (freq[clean] || 0) + 1;
-      }
-    }
-  }
-  return Object.entries(freq)
-    .filter(([_, c]) => c >= 2)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 40)
-    .map(([word, count]) => ({ word, count }));
+async function fetchTitle(videoId, apiKey){
+  try{
+    const txt=await callGemini(
+      `What is the title of this YouTube video: https://www.youtube.com/watch?v=${videoId} ? Reply with ONLY the title, nothing else.`,
+      apiKey
+    );
+    const t=txt.trim().replace(/^["']|["']$/g,'');
+    if(t.length>2&&t.length<200) return t;
+  }catch(e){}
+  return `Video ${videoId.slice(0,8)}`;
 }
 
 // ===== LOAD VIDEO =====
-async function loadVideo() {
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url) { alert('YouTube 링크를 입력해주세요.'); return; }
+async function loadVideo(){
+  const url=document.getElementById('urlInput').value.trim();
+  const apiKey=getApiKey();
+  hideError();
 
-  const vid = extractVideoId(url);
-  if (!vid) { alert('유효한 YouTube 링크를 입력해주세요.'); return; }
+  if(!url){ showError('YouTube 링크를 입력해주세요.'); return; }
+  if(!apiKey){ showError('Gemini API Key를 입력하고 저장 버튼을 눌러주세요.\naistudio.google.com/apikey 에서 무료 발급 가능합니다.'); return; }
+  if(!apiKey.startsWith('AIza')){ showError('올바른 Gemini API Key 형식이 아닙니다.\n(AIzaSy... 형태여야 합니다)'); return; }
 
-  document.getElementById('loadBtn').disabled = true;
-  document.getElementById('loadingState').style.display = 'block';
-  document.getElementById('videoGrid').style.display = 'none';
-  document.getElementById('emptyState').style.display = 'none';
+  const vid=extractVideoId(url);
+  if(!vid){ showError('유효한 YouTube 링크를 입력해주세요.\n예: https://youtu.be/KW0kDxU7LEg'); return; }
 
-  try {
-    const transcript = await fetchTranscriptViaProxy(vid);
-    if (!transcript || transcript.length === 0) {
-      alert('자막을 가져올 수 없어요.\n영어 자막이 있는 영상인지 확인해주세요.\n(일부 영상은 자막을 제공하지 않습니다)');
+  document.getElementById('loadBtn').disabled=true;
+  setLoading(true,'YouTube 자막 API에서 스크립트 가져오는 중...');
+
+  try{
+    const transcript=await fetchTranscript(vid,apiKey);
+
+    if(!transcript||transcript.length<3){
+      showError(
+        '영어 자막을 가져오지 못했습니다.\n\n'+
+        '확인사항:\n'+
+        '• YouTube에서 영상 재생 → CC 버튼 → English 자막 활성화 가능한지 확인\n'+
+        '• 자동 생성(Auto-generated) 자막도 지원됩니다\n'+
+        '• 일부 영상은 지역 제한으로 자막 접근이 불가할 수 있습니다'
+      );
       return;
     }
 
-    // Get title via oEmbed
-    let title = `영상 ${vid.slice(0,8)}`;
-    try {
-      const oembed = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`);
-      if (oembed.ok) {
-        const od = await oembed.json();
-        title = od.title || title;
-      }
-    } catch(e) {}
+    setLoading(true,'영상 정보 가져오는 중...');
+    const title=await fetchTitle(vid,apiKey);
 
-    // Save to list
-    const existing = myVideos.find(v => v.id === vid);
-    if (!existing) {
-      myVideos.push({ id: vid, url, title, lastStudied: Date.now(), transcript });
-    } else {
-      existing.transcript = transcript;
-      existing.lastStudied = Date.now();
-    }
+    const existing=myVideos.find(v=>v.id===vid);
+    if(existing){ existing.transcript=transcript; existing.title=title; existing.lastStudied=Date.now(); }
+    else { myVideos.push({id:vid,url,title,lastStudied:Date.now(),transcript}); }
     saveVideos();
 
-    currentVideoId = vid;
-    currentTranscript = transcript;
-    currentVocab = extractVocab(transcript);
-
-    document.getElementById('urlInput').value = '';
+    currentVideoId=vid; currentTranscript=transcript; currentVocab=extractVocab(transcript);
+    document.getElementById('urlInput').value='';
     openStudy(vid);
-  } catch(err) {
+
+  }catch(err){
     console.error(err);
-    alert('오류가 발생했습니다. 다시 시도해주세요.');
-  } finally {
-    document.getElementById('loadBtn').disabled = false;
-    document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('videoGrid').style.display = '';
+    showError('오류가 발생했습니다:\n'+err.message+'\n\nGemini API Key가 유효한지 확인해주세요.\n(aistudio.google.com/apikey)');
+  }finally{
+    document.getElementById('loadBtn').disabled=false;
+    setLoading(false);
   }
 }
 
-// ===== OPEN STUDY =====
-function openStudy(videoId) {
-  const video = myVideos.find(v => v.id === videoId);
-  if (!video) return;
-
-  currentVideoId = videoId;
-  currentTranscript = video.transcript || [];
-  currentVocab = extractVocab(currentTranscript);
-  video.lastStudied = Date.now();
-  saveVideos();
-
-  document.getElementById('studyTitle').textContent = video.title;
-  document.getElementById('studyId').textContent = `youtube.com/watch?v=${videoId}`;
-
-  renderTranscript();
-  renderVocab();
-  switchTab('study');
-  createPlayer(videoId);
+function setLoading(show,msg){
+  document.getElementById('loadingState').style.display=show?'block':'none';
+  if(msg) document.getElementById('loadingSub').textContent=msg;
+  document.getElementById('videoGrid').style.display=show?'none':'';
+  if(!show) renderVideoList();
 }
 
-// ===== RENDER TRANSCRIPT =====
-function renderTranscript() {
-  const body = document.getElementById('transcriptBody');
-  body.innerHTML = currentTranscript.map((item, i) => {
-    const min = Math.floor(item.offset / 60).toString().padStart(2,'0');
-    const sec = Math.floor(item.offset % 60).toString().padStart(2,'0');
+function showError(msg){
+  const el=document.getElementById('errorBox');
+  el.innerHTML='<strong>⚠️ 알림</strong>'+escHtml(msg).replace(/\n/g,'<br>');
+  el.style.display='block';
+}
+function hideError(){ document.getElementById('errorBox').style.display='none'; }
+
+// ===== VOCAB =====
+const STOP=new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','must','can','i','you','he','she','it','we','they','my','your','his','her','its','our','their','this','that','these','those','as','if','when','what','how','who','which','so','not','no','yes','just','up','out','about','get','got','go','like','know','think','make','see','say','said','come','came','take','took','one','two','all','some','more','very','also','than','then','there','here','back','now','time','way','well','even','still','down','into','over','after','before','because','while','though','through','only','much','many','both','each','between','under','never','always','often','again','same','other','new','first','last','long','great','little','own','right','good','old','big','high','different','small','large','next','early','young','few','bad','able','want','need','give','look','use','find','tell','ask','work','seem','feel','try','leave','call','keep','let','put','mean','become','show','hear','play','run','move','live','believe','hold','bring','write','set','learn','change','lead','understand','watch','follow','stop','create','read','spend','grow','open','walk','offer','remember','consider','appear','buy','wait','report','decide','pull','yeah','okay','actually','really','gonna','wanna','kinda','sorta','thing','things','people','person','kind','something','everything','nothing','anything','everyone','someone','anyone']);
+
+function extractVocab(transcript){
+  const freq={};
+  for(const item of transcript){
+    const words=item.text.toLowerCase().match(/[a-z']{4,}/g)||[];
+    for(const w of words){
+      const c=w.replace(/^'+|'+$/g,'');
+      if(c.length>=4&&!STOP.has(c)) freq[c]=(freq[c]||0)+1;
+    }
+  }
+  return Object.entries(freq).filter(([_,c])=>c>=2).sort((a,b)=>b[1]-a[1]).slice(0,40).map(([word,count])=>({word,count}));
+}
+
+// ===== STUDY =====
+function openStudy(videoId){
+  const v=myVideos.find(v=>v.id===videoId); if(!v) return;
+  currentVideoId=videoId; currentTranscript=v.transcript||[]; currentVocab=extractVocab(currentTranscript);
+  v.lastStudied=Date.now(); saveVideos();
+  document.getElementById('studyTitle').textContent=v.title;
+  document.getElementById('studyId').textContent=`youtube.com/watch?v=${videoId}`;
+  renderTranscript(); renderVocab(); switchTab('study'); createPlayer(videoId);
+}
+
+function renderTranscript(){
+  document.getElementById('transcriptBody').innerHTML=currentTranscript.map((item,i)=>{
+    const min=Math.floor(item.offset/60).toString().padStart(2,'0');
+    const sec=Math.floor(item.offset%60).toString().padStart(2,'0');
     return `<div class="transcript-item" id="ts-${i}" onclick="seekTo(${item.offset})">
       <span class="ts-time">${min}:${sec}</span>
       <span class="ts-text">${escHtml(item.text)}</span>
@@ -1004,253 +487,145 @@ function renderTranscript() {
   }).join('');
 }
 
-function updateActiveTranscript() {
-  const items = document.querySelectorAll('.transcript-item');
-  let activeIdx = 0;
-  for (let i = 0; i < currentTranscript.length; i++) {
-    if (currentTranscript[i].offset <= currentTime + 0.5) activeIdx = i;
-    else break;
+function updateActiveTranscript(){
+  let ai=0;
+  for(let i=0;i<currentTranscript.length;i++){
+    if(currentTranscript[i].offset<=currentTime+0.5) ai=i; else break;
   }
-  items.forEach((el, i) => {
-    el.classList.toggle('active', i === activeIdx);
-  });
-  // Auto scroll
-  const activeEl = document.getElementById(`ts-${activeIdx}`);
-  if (activeEl) {
-    activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }
+  document.querySelectorAll('.transcript-item').forEach((el,i)=>el.classList.toggle('active',i===ai));
+  const ae=document.getElementById(`ts-${ai}`);
+  if(ae) ae.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 
-// ===== RENDER VOCAB =====
-function renderVocab() {
-  const grid = document.getElementById('vocabGrid');
-  if (currentVocab.length === 0) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:8px;">단어 추출 중...</div>';
-    return;
-  }
-  grid.innerHTML = currentVocab.map(v =>
-    `<div class="vocab-chip tooltip-wrap" onclick="searchWord('${v.word}')">
-      ${escHtml(v.word)} <span class="count">${v.count}</span>
-      <div class="tooltip-box">클릭 → 사전 검색</div>
-    </div>`
-  ).join('');
-}
-
-function searchWord(word) {
-  window.open(`https://en.dict.naver.com/#/search?query=${encodeURIComponent(word)}`, '_blank');
+function renderVocab(){
+  const g=document.getElementById('vocabGrid');
+  if(!currentVocab.length){ g.innerHTML='<div style="color:var(--muted);font-size:0.82rem;padding:8px;">추출된 단어 없음</div>'; return; }
+  g.innerHTML=currentVocab.map(v=>
+    `<div class="vocab-chip" onclick="window.open('https://en.dict.naver.com/#/search?query=${encodeURIComponent(v.word)}','_blank')">
+      ${escHtml(v.word)}<span class="cnt">${v.count}</span>
+    </div>`).join('');
 }
 
 // ===== QUIZ =====
-function generateQuizItems(all = false) {
-  const pool = currentTranscript.filter(t => t.text.split(/\s+/).length >= 5);
-  const items = all ? pool : pool.slice(0, Math.min(15, pool.length));
-
-  return items.map(t => {
-    const words = t.text.split(/\s+/);
-    // Pick a vocab word if possible
-    const vocabWords = currentVocab.map(v => v.word);
-    let blankIdx = -1;
-    for (let i = 0; i < words.length; i++) {
-      if (vocabWords.includes(words[i].toLowerCase().replace(/[^a-z]/g,''))) {
-        blankIdx = i;
-        break;
-      }
+function generateQuizItems(all){
+  const pool=currentTranscript.filter(t=>t.text.split(/\s+/).length>=5);
+  const items=all?pool:pool.slice(0,Math.min(15,pool.length));
+  const vs=new Set(currentVocab.map(v=>v.word));
+  return items.map(t=>{
+    const words=t.text.split(/\s+/);
+    let bi=-1;
+    for(let i=0;i<words.length;i++){
+      if(vs.has(words[i].toLowerCase().replace(/[^a-z]/g,''))) {bi=i;break;}
     }
-    if (blankIdx === -1) {
-      blankIdx = Math.floor(Math.random() * (words.length - 2)) + 1;
-    }
-    const answer = words[blankIdx].replace(/[^a-zA-Z']/g, '');
-    return {
-      original: t.text,
-      blanked: words.map((w, i) => i === blankIdx ? '___' : w).join(' '),
-      answer,
-      time: t.offset,
-    };
-  }).filter(q => q.answer.length >= 2);
+    if(bi===-1) bi=Math.floor(Math.random()*(words.length-2))+1;
+    const answer=words[bi].replace(/[^a-zA-Z']/g,'');
+    return { blanked:words.map((w,i)=>i===bi?'___':w).join(' '), answer, time:t.offset };
+  }).filter(q=>q.answer.length>=2);
 }
 
-function startQuiz() {
-  quizItems = generateQuizItems(false);
-  quizIndex = 0;
-  quizScore = 0;
-  switchTab('quiz');
-  renderQuiz();
-}
+function startQuiz(){ quizItems=generateQuizItems(false); quizIndex=0; quizScore=0; switchTab('quiz'); renderQuiz(); }
+function startClozeAll(){ quizItems=generateQuizItems(true); quizIndex=0; quizScore=0; switchTab('quiz'); renderQuiz(); }
 
-function startClozeAll() {
-  quizItems = generateQuizItems(true);
-  quizIndex = 0;
-  quizScore = 0;
-  switchTab('quiz');
-  renderQuiz();
-}
-
-function renderQuiz() {
-  const body = document.getElementById('quizBody');
-  if (quizIndex >= quizItems.length) {
-    // Result screen
-    const pct = Math.round((quizScore / quizItems.length) * 100);
-    const msg = pct >= 80 ? '완벽해요! 🎉' : pct >= 60 ? '잘 했어요! 👍' : '다시 도전해봐요 💪';
-    body.innerHTML = `
-      <div class="quiz-result">
-        <div class="result-score">${pct}%</div>
-        <div class="result-label">${quizScore} / ${quizItems.length} 정답 · ${msg}</div>
-        <div class="result-actions">
-          <button class="btn-lg btn-green" onclick="startQuiz()">🔄 다시 풀기</button>
-          <button class="btn-lg" style="background:var(--surface2);color:var(--text);" onclick="switchTab('study')">← 학습으로</button>
-        </div>
-      </div>`;
-    return;
+function renderQuiz(){
+  const body=document.getElementById('quizBody');
+  if(quizIndex>=quizItems.length){
+    const pct=Math.round((quizScore/quizItems.length)*100);
+    const msg=pct>=80?'완벽해요! 🎉':pct>=60?'잘 했어요! 👍':'다시 도전해봐요 💪';
+    body.innerHTML=`<div class="quiz-result">
+      <div class="result-score">${pct}%</div>
+      <div class="result-label">${quizScore} / ${quizItems.length} 정답 · ${msg}</div>
+      <div class="result-actions">
+        <button class="btn-lg btn-green" onclick="startQuiz()">🔄 다시 풀기</button>
+        <button class="btn-lg" style="background:var(--surface2);color:var(--text);" onclick="switchTab('study')">← 학습으로</button>
+      </div>
+    </div>`; return;
   }
-
-  quizAnswered = false;
-  const q = quizItems[quizIndex];
-  const pct = (quizIndex / quizItems.length) * 100;
-
-  // Highlight blank word in original
-  const parts = q.blanked.split('___');
-
-  body.innerHTML = `
+  quizAnswered=false;
+  const q=quizItems[quizIndex];
+  const parts=q.blanked.split('___');
+  body.innerHTML=`
     <div class="quiz-progress">
-      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
-      <div class="progress-text">${quizIndex + 1} / ${quizItems.length}</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${(quizIndex/quizItems.length)*100}%"></div></div>
+      <div class="progress-text">${quizIndex+1} / ${quizItems.length}</div>
     </div>
     <div class="quiz-card">
-      <div class="quiz-num">QUESTION ${quizIndex + 1}</div>
+      <div class="quiz-num">QUESTION ${quizIndex+1}</div>
       <div class="quiz-sentence">
-        ${escHtml(parts[0])}<span class="quiz-blank" id="blankDisplay">___</span>${escHtml(parts[1] || '')}
+        ${escHtml(parts[0])}<span class="quiz-blank" id="blankDisplay">___</span>${escHtml(parts[1]||'')}
       </div>
       <div class="quiz-input-row">
-        <input type="text" class="quiz-input" id="quizInput" 
-               placeholder="빈칸에 들어갈 단어를 입력하세요"
-               onkeydown="if(event.key==='Enter') checkAnswer()" autofocus/>
-        <button class="btn-check" onclick="checkAnswer()">확인</button>
+        <input type="text" class="quiz-input" id="quizInput" placeholder="빈칸에 들어갈 단어 입력"
+               onkeydown="if(event.key==='Enter') checkAnswer()"/>
+        <button class="btn-check" id="checkBtn" onclick="checkAnswer()">확인</button>
       </div>
       <div id="quizFeedback"></div>
-      <button class="quiz-context-btn" onclick="seekTo(${q.time}); switchTab('study');">
-        🎬 영상에서 해당 구간 보기
-      </button>
+      <button class="quiz-ctx-btn" onclick="seekTo(${q.time});switchTab('study');">🎬 해당 구간 영상 보기</button>
     </div>`;
-
-  setTimeout(() => {
-    const inp = document.getElementById('quizInput');
-    if (inp) inp.focus();
-  }, 100);
+  setTimeout(()=>{ const inp=document.getElementById('quizInput'); if(inp) inp.focus(); },80);
 }
 
-function checkAnswer() {
-  if (quizAnswered) {
-    quizIndex++;
-    renderQuiz();
-    return;
-  }
-
-  const inp = document.getElementById('quizInput');
-  const feedback = document.getElementById('quizFeedback');
-  const blank = document.getElementById('blankDisplay');
-  if (!inp) return;
-
-  const val = inp.value.trim().toLowerCase();
-  const ans = quizItems[quizIndex].answer.toLowerCase();
-
-  quizAnswered = true;
-
-  if (val === ans || val === ans.replace(/[^a-z]/g,'')) {
-    quizScore++;
-    inp.classList.add('correct');
-    blank.textContent = quizItems[quizIndex].answer;
-    blank.style.color = '#4ade80';
-    blank.style.borderColor = '#4ade80';
-    feedback.innerHTML = `<div class="quiz-feedback correct">✓ 정답입니다!</div>`;
-  } else {
-    inp.classList.add('wrong');
-    blank.textContent = quizItems[quizIndex].answer;
-    blank.style.color = 'var(--accent3)';
-    blank.style.borderColor = 'var(--accent3)';
-    feedback.innerHTML = `<div class="quiz-feedback wrong">✗ 오답. 정답: <strong>${escHtml(quizItems[quizIndex].answer)}</strong></div>`;
-  }
-
-  // Update button
-  document.querySelector('.btn-check').textContent = '다음 →';
+function checkAnswer(){
+  if(quizAnswered){ quizIndex++; renderQuiz(); return; }
+  const inp=document.getElementById('quizInput');
+  const feedback=document.getElementById('quizFeedback');
+  const blank=document.getElementById('blankDisplay');
+  if(!inp) return;
+  const val=inp.value.trim().toLowerCase();
+  const ans=quizItems[quizIndex].answer.toLowerCase();
+  quizAnswered=true;
+  const correct=val===ans||val===ans.replace(/[^a-z]/g,'');
+  if(correct){ quizScore++; inp.classList.add('correct'); blank.textContent=quizItems[quizIndex].answer; blank.style.color='#4ade80'; blank.style.borderColor='#4ade80'; feedback.innerHTML=`<div class="quiz-feedback correct">✓ 정답입니다!</div>`; }
+  else { inp.classList.add('wrong'); blank.textContent=quizItems[quizIndex].answer; blank.style.color='var(--accent3)'; blank.style.borderColor='var(--accent3)'; feedback.innerHTML=`<div class="quiz-feedback wrong">✗ 오답. 정답: <strong>${escHtml(quizItems[quizIndex].answer)}</strong></div>`; }
+  document.getElementById('checkBtn').textContent='다음 →';
 }
 
-// ===== RENDER VIDEO LIST =====
-function renderVideoList() {
-  const grid = document.getElementById('videoGrid');
-  const empty = document.getElementById('emptyState');
-  document.getElementById('listCount').textContent = myVideos.length;
-
-  if (myVideos.length === 0) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-
-  const sorted = [...myVideos].sort((a, b) => b.lastStudied - a.lastStudied);
-  grid.innerHTML = sorted.map(v => `
+// ===== VIDEO LIST =====
+function renderVideoList(){
+  const grid=document.getElementById('videoGrid');
+  const empty=document.getElementById('emptyState');
+  document.getElementById('listCount').textContent=myVideos.length;
+  if(!myVideos.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const sorted=[...myVideos].sort((a,b)=>b.lastStudied-a.lastStudied);
+  grid.innerHTML=sorted.map(v=>`
     <div class="video-card">
-      <img class="video-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" 
-           onerror="this.style.display='none'" loading="lazy"/>
+      <img class="video-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" onerror="this.style.display='none'" loading="lazy"/>
       <div class="video-card-body">
         <div class="video-title">${escHtml(v.title)}</div>
         <div class="video-meta">
           <span>${new Date(v.lastStudied).toLocaleDateString('ko-KR')}</span>
-          <span>${(v.transcript||[]).length} 문장</span>
+          <span>${(v.transcript||[]).length}문장</span>
         </div>
         <div class="video-actions">
           <button class="btn-sm btn-study" onclick="event.stopPropagation();openStudy('${v.id}')">▶ 학습</button>
-          <button class="btn-sm btn-quiz" onclick="event.stopPropagation();openStudyThenQuiz('${v.id}')">📝 퀴즈</button>
+          <button class="btn-sm btn-quiz" onclick="event.stopPropagation();openStudyQ('${v.id}')">📝 퀴즈</button>
           <button class="btn-sm btn-delete" onclick="event.stopPropagation();deleteVideo('${v.id}')">삭제</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function openStudyThenQuiz(videoId) {
-  openStudy(videoId);
-  setTimeout(() => startQuiz(), 300);
-}
+function openStudyQ(vid){ openStudy(vid); setTimeout(()=>startQuiz(),300); }
+function deleteVideo(vid){ if(!confirm('삭제할까요?')) return; myVideos=myVideos.filter(v=>v.id!==vid); saveVideos(); renderVideoList(); }
 
-function deleteVideo(videoId) {
-  if (!confirm('이 영상을 목록에서 삭제할까요?')) return;
-  myVideos = myVideos.filter(v => v.id !== videoId);
-  saveVideos();
-  renderVideoList();
-}
-
-// ===== TAB SWITCHING =====
-function switchTab(tab) {
-  ['list','study','quiz'].forEach(t => {
-    document.getElementById(`view-${t}`).style.display = t === tab ? '' : 'none';
-    const el = document.getElementById(`tab-${t}`);
-    if (el) el.classList.toggle('active', t === tab);
+// ===== TAB =====
+function switchTab(tab){
+  ['list','study','quiz'].forEach(t=>{
+    document.getElementById(`view-${t}`).style.display=t===tab?'':'none';
+    const el=document.getElementById(`tab-${t}`);
+    if(el) el.classList.toggle('active',t===tab);
   });
-
-  if (tab === 'list') renderVideoList();
+  if(tab==='list'){ hideError(); renderVideoList(); }
 }
 
 // ===== UTILS =====
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function saveVideos(){
+  try{ localStorage.setItem('ytStudy_v3',JSON.stringify(myVideos)); }
+  catch(e){ if(myVideos.length>8){myVideos.sort((a,b)=>a.lastStudied-b.lastStudied);myVideos.shift();saveVideos();} }
 }
 
-function saveVideos() {
-  // Save without heavy transcript data limit
-  try {
-    localStorage.setItem('ytStudyVideos', JSON.stringify(myVideos));
-  } catch(e) {
-    // storage full - trim oldest
-    if (myVideos.length > 10) {
-      myVideos.sort((a,b) => a.lastStudied - b.lastStudied);
-      myVideos.shift();
-      saveVideos();
-    }
-  }
-}
-
-// ===== INIT =====
+// Init
 renderVideoList();
 </script>
 </body>
